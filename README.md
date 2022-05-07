@@ -122,7 +122,7 @@ included in the numeric column are: 'year', 'adult_mortality', 'infant_deaths', 
                             'HepB', 'measles', 'BMI', 'u5_deaths', 'Polio', 'total_expenditure', 'DPT', 
                             'HIV_AIDS', 'GDP', 'population', 'thinness_10_19', 'thinness_5_9', 'HDI', 'school_year'.
 
-and in the categoric column are: 'country', 'status'.
+and in the categoric column are: 'country', 'status'. In categorical column I do encoding with onehot encoder.
 
 second, pipeline: contains the preprocessor as 'prep' which I defined earlier, and the algorithm as 'algo' which in this case I use _**XGBRegressor**_.
 
@@ -158,8 +158,103 @@ _reg_alpha_, and _reg_lambda_ are reguralization (to reduce overfit)
 
 Why do i prefer to use Random Search over Grid Search? because XGBoost has many parameters and it will take a long time to use Grid Search because it will try all combinations. If I use Random Search then it will only trial the number that I have determined so that it will save a lot of time and be more computationally efficient.
 
+# Results and Many Others
 
+![1m](https://user-images.githubusercontent.com/86812576/167234320-4658d3eb-1876-457c-8582-b02c9bdd7e37.png)
 
+from the result above it can be seen that we have a good model with 96% score reached. After this section i will go to Feature Importance.
 
-# New Technique: BayesianSearchCV
+### Feature Importance
+
+![image](https://user-images.githubusercontent.com/86812576/167234596-41793603-878d-41c5-9f5e-9f3950d33c14.png)
+
+It turns out that if we look at the Feature Importance (Mean Square Decrease) the most important features are:
+
+1.  'adult_mortality',
+  
+2.  'HDI',
+  
+3.  'HIV_AIDS',
+  
+4.  'u5_deaths',
+  
+5.  'country',
+  
+6.  'BMI',
+  
+7.  'thinness_5_9',
+  
+8  'school_year',
+  
+9.  'year',
+  
+10. 'thinness_10_19']
+
+And other features don't seem to have any effect. So we can cut out the features, and focus on those ten features. why do we want to cut features? why don't we use all the features? because the machine has a weakness. If we provide more information, then the pattern will be more difficult to find. because the machine only looks for patterns. it's like a maze, but if we give things that are important, specific to something then it will be easier to find, generalizing and produce a better model
+
+We can't guarantee, but most of the time it can helps. it could be a better model, or it could be worst.
+
+# Model After Feature Importance
+
+### Mean Score Decrease
+
+Now i only select 10 features to the model after Feature Importance, and all these 5 features is categoric columns. Here's the result:
+
+![2m](https://user-images.githubusercontent.com/86812576/167235061-d933f0f4-51f9-40ca-b7e3-860eae96f0bc.png)
+
+The result is not much change in the score. both produce a score of 96%. 
+
+# Polynomial
+
+I also put Polynomial in the model. Here's the result:
+
+![pol](https://user-images.githubusercontent.com/86812576/167235844-e31040d9-9c66-45eb-911b-cfbe4e02d5ea.png)
+
+When I add Poly, the resulting score actually decreases. And it turns out the second model after feature importance is the best model.
+
+# Other Technique: BayesianSearchCV
+
 The main difference between Bayesian search and the other methods is that the tuning algorithm optimizes its parameter selection in each round according to the previous round score. Thus, instead of randomly choosing the next set of parameters, the algorithm optimizes the choice, and likely reaches the best parameter set faster than the previous two methods. Meaning, this method chooses only the relevant search space and discards the ranges that will most likely not deliver the best solution. Thus, it can be beneficial when you have a large amount of data, the learning is slow, and you want to minimize the tuning time.
+
+Bayesian Search will fit 3 every trial and create probability. Depending on the cross validation that we set, in this case cv = 3. I have also added Bayesian Search to the first model and the results are slightly better although not significant which is around 0.7
+
+![bay](https://user-images.githubusercontent.com/86812576/167236796-4c972ca5-f342-4d02-a3c4-b268f182f1cd.png)
+
+# Feature Importance for Bayesian Search Model
+
+![image](https://user-images.githubusercontent.com/86812576/167236867-38436655-dbb2-4d31-add4-55bc03969008.png)
+
+not too many changes to feature importance. Here's the top 10 feature importance and the resulting model:
+
+1.  'adult_mortality',
+  
+2.  'HDI',
+  
+3.  'HIV_AIDS',
+  
+4.  'thinness_5_9',
+  
+5.  'u5_deaths',
+  
+6.  'BMI',
+  
+7.  'school_year',
+  
+8   'country',
+  
+9.  'year',
+  
+10. 'alcohol']
+
+![imp](https://user-images.githubusercontent.com/86812576/167237129-5035bf9e-fd28-40a1-bb39-3bd457638b5a.png)
+
+looks like the best score we can get is 0.96. 
+
+# Polynomial 
+
+The last is i add polynomial after feature importane in Bayesian Search Model: 
+
+![pol2](https://user-images.githubusercontent.com/86812576/167237284-31aebe5f-8719-47aa-a112-76439a1a1337.png)
+
+Well... it looks like I'm stuck in the model with a score of 0.96. this is actually a good model.
+
