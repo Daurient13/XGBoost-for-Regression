@@ -97,7 +97,7 @@ which i have explained before.
 
 I always work on data science projects with simple think so that I can benchmark. Using a simple model to benchmark. And most of the time it's more efficient and sometimes find a good one. but at the beginning I did mini Exploratory Data Analysis. **_because i focus more on the algorithm_**.
 
-If we look at the data there are many missing values. Actually it's not that bad, and we can impute it at the preprocessor. so no data will be discarded except in the life_expectancy column as a target, because in the life_expectancy column there is a missing value and for the target column this should not happen because we are not working on unsupervised learning. **_But keep in mind that what is discarded is the row with the missing value, not the entire target column_**.
+If we look at the data there are many missing values. Actually it's not that bad, and we can impute it at the _preprocessor_. So, no data will be discarded except in the life_expectancy column as a target, because in 'life_expectancy' column there is a missing value and for the target column this should not happen because we are not working on _Unsupervised Learning_. **_But keep in mind that what is discarded is the row with the missing value, not the entire target column_**.
 
 **_lesson_: _in Supervised Learning the target column must not have missing values_.**
 
@@ -108,9 +108,55 @@ split the data into X, and y
 
 X = all columns except the target column.
 
-y = 'lfe_expectancy' as target
+y = 'life_expectancy' as target
 
 test_size = 0.2 (which means 80% for train, and 20% for test)
+
+# Training
+
+In the Training step there are 3 main things that I specify.
+
+First, the preprocessor: here the columns will be grouped into numeric and categoric.
+
+included in the numeric column are: 'year', 'adult_mortality', 'infant_deaths', 'alcohol', 'percentage_expenditure', 
+                            'HepB', 'measles', 'BMI', 'u5_deaths', 'Polio', 'total_expenditure', 'DPT', 
+                            'HIV_AIDS', 'GDP', 'population', 'thinness_10_19', 'thinness_5_9', 'HDI', 'school_year'.
+
+and in the categoric column are: 'country', 'status'.
+
+second, pipeline: contains the preprocessor as 'prep' which I defined earlier, and the algorithm as 'algo' which in this case I use _**XGBRegressor**_.
+
+and third, tuning with RandomizedSearchCV: in this case I use the tuning recommendations (rsp.xgb_params) that often occur in many cases. but does not rule out hyperparameter tuning if the model results are not good. with cross validation = 3, and n_iter = 50 (trials in Random Search)
+
+**Random Search Parameters Recommendation** :
+
+**{'algo__max_depth': Integer(low=1, high=10),**
+
+ **'algo__learning_rate': Real(low=-2, high=0, prior='log-uniform'),**
+ 
+ **'algo__n_estimators': Integer(low=100, high=200),**
+ 
+ **'algo__subsample': Real(low=0.3, high=0.8, prior='uniform'),**
+ 
+ **'algo__gamma': Integer(low=1, high=10),**
+ 
+ **'algo__colsample_bytree': Real(low=0.1, high=1, prior='uniform'),**
+ 
+ **'algo__reg_alpha': Real(low=-3, high=1, prior='log-uniform'),**
+ 
+ **'algo__reg_lambda': Real(low=-3, high=1, prior='log-uniform')}**
+
+About Pamaterers:
+
+_subsample_ = data to subsample (rows)
+
+_colsample_bytree_ = _max_features_ = subsampling column (feature) 
+
+_gamma_ = _min_impurity_decrease_ = minimum loss reduction for split to happen 
+
+_reg_alpha_, and _reg_lambda_ are reguralization (to reduce overfit)
+
+Why do i prefer to use Random Search over Grid Search? because XGBoost has many parameters and it will take a long time to use Grid Search because it will try all combinations. If I use Random Search then it will only trial the number that I have determined so that it will save a lot of time and be more computationally efficient.
 
 
 
