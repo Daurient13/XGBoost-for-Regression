@@ -258,3 +258,6 @@ The last is i add polynomial after feature importane in Bayesian Search Model:
 
 Well... it looks like I'm stuck in the model with a score of 0.96. this is actually a good model.
 
+# Prediction
+
+I want to make sure whether the model is working well, for that I will try to predict the X_test data.
